@@ -1,0 +1,164 @@
+"""This is a game copied from 'Invent Your Own Computer Games with Python'
+   One player thinks of a word, and then draws a blank on the page for each letter
+   in the word. Then the second player tries to guess letters that might be in the word.
+   if they guess correctly, the first player writes the letter in the proper blank.
+   if they guess incorrectly, the first player draws a single body part of the hanging man.
+   if the second player can guess all letters in the word before the hangman is completely drawn,
+   they win. But if they cannot figure it out in time, they lose."""
+   
+   import random
+
+HANGMANPIC = ['''
+    +-----+
+      |   |
+          |
+          |
+          |
+          |
+    --------''','''
+    +-----+
+      |   |
+      0   |
+          |
+          |
+          |
+    --------''','''
+    +-----+
+      |   |
+      0   |
+     /    |
+          |
+          |
+    --------''','''
+    +-----+
+      |   |
+      0   |
+     /|   |
+          |
+          |
+    --------''', '''
+    +-----+
+      |   |
+      0   |
+     /|\  |
+          |
+          |
+    --------''', '''
+    +-----+
+      |   |
+      0   |
+     /|\  |
+     /    |
+          |
+    --------''','''
+    +-----+
+      |   |
+      0   |
+     /|\  |
+     / \  |
+          |
+    --------''']
+
+words = 'ant baboon badger bat bear beaver camel cat clam cobra cougar coyote crow deer dog donkey duck eagle ferret fox frog goat goose hawk lion lizard llama mole monkey moose mouse mule newt otter owl panda parrot pigeon python rabbit ram rat raven rhino salmon seal shark sheep skunk sloth snake spider stork swan tiger toad trout turk turkey weasel whale wolf wombat zebra'.split()
+
+# randomly select one secret word from wordlist
+def getRandomWord(wordList):
+    wordIndex = random.randint(0, len(wordList)-1)
+    return wordList[wordIndex]
+
+# show player information of missed letters, correct guessed letters and blanks which need to be guessed
+def displayBoard(HANGMANPIC, missedLetters, correctLetters, secretWord):
+    print(HANGMANPIC[len(missedLetters)]) # each a wrongly guessed letter will make HANGMANPIC moving next
+    print()
+
+    print("Missed letters are: ", end = ' ')
+    for letter in missedLetters:
+        print(letter, end='')
+    print()
+
+    blanks = '_' * len(secretWord)
+
+    for i in range(len(secretWord)):
+        if secretWord[i] in correctLetters:
+            blanks = secretWord[:i] + secretWord[i] + secretWord[i+1:]
+
+    for letter in blanks:
+        print(letter, end=' ')
+    print()
+
+# Let player guess the word make sure only ONE LETTER is entered
+def guessWord(alreadyGuessed):
+    while True:
+        print("Enter a letter")
+        guess = input().lower()
+
+        if len(guess) != 1:
+            print("Please enter only ONE letter")
+
+        elif guess not in 'qwertyuioplkjhgfdsazxcvbnm':
+            print("Please enter LETTER only")
+
+        elif guess in alreadyGuessed:
+            print("this letter has been guessed before")
+
+        else:
+            return guess
+
+# Ask the player if the game continued?
+def playAgain():
+    print("Do you want to play this game again?(y/n)")
+    return input().lower().startswith('y')
+
+# Main script starts and initialize all required variables
+print("H A N G M A N")
+missedLetters = ' '
+correctLetters = ' '
+secretWord = getRandomWord(words)
+gameIsDone = False
+
+# Starts calling functions above
+while True:
+    displayBoard(HANGMANPIC, missedLetters, correctLetters, secretWord)
+
+    guess = guessWord(missedLetters + correctLetters)
+
+    if guess in secretWord:
+
+        correctLetters = correctLetters + guess
+
+        foundAllLetters = True
+
+        for i in range(len(secretWord)):
+            if secretWord[i] not in correctLetters:
+                foundAllLetters = False
+                break
+
+        if foundAllLetters:
+            print("You win the game! ")
+            gameIsDone = True
+
+    else:
+        missedLetters = missedLetters + guess
+
+        if len(missedLetters) == len(HANGMANPIC) - 1:
+            displayBoard(HANGMANPIC, missedLetters, correctLetters, secretWord)
+            print("You are running out of luck!")
+            print("You have guessed " + str(len(missedLetters + correctLetters)) + " times, and " + str(len(correctLetters)) +
+          " times are right, and they are: " + str(correctLetters) + "; and missing words are " + str(missedLetters))
+            gameIsDone = True
+
+# ask player if he/she wants to continue the game
+    if gameIsDone:
+        if palyAgain():
+            missedLetters = ' '
+            correctLetters = ' '
+            gameIsDone = False
+            secretWord = getRandomWord(words)
+        else:
+            break
+
+
+
+
+ 
+   
